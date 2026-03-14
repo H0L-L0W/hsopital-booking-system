@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Staff Dashboard{% endblock %}
+{% block content %}
+<h2 class="mb-4">Hospital Staff Dashboard</h2>
+
+<section class="mb-4">
+  <div class="row g-3 text-center">
+    <div class="col-md-4">
+      <div class="p-3 rounded-3 h-100" style="background: var(--bg-soft);">
+        <div class="mb-1" style="font-size: 1.75rem;">📅</div>
+        <h6 class="fw-semibold mb-0">Book Online</h6>
+        <p class="text-muted small mb-0">Patients choose doctor and time. No phone calls.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="p-3 rounded-3 h-100" style="background: var(--bg-soft);">
+        <div class="mb-1" style="font-size: 1.75rem;">🔔</div>
+        <h6 class="fw-semibold mb-0">Reminders</h6>
+        <p class="text-muted small mb-0">Confirmations and reminders for visits.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="p-3 rounded-3 h-100" style="background: var(--bg-soft);">
+        <div class="mb-1" style="font-size: 1.75rem;">👨‍⚕️</div>
+        <h6 class="fw-semibold mb-0">Trusted Doctors</h6>
+        <p class="text-muted small mb-0">Browse departments and book the right specialist.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<h4 class="mb-3">Upcoming appointments</h4>
+{% if upcoming %}
+  <div class="table-responsive">
+    <table class="table table-striped align-middle">
+      <thead>
+        <tr>
+          <th>Date &amp; Time</th>
+          <th>Patient</th>
+          <th>Doctor</th>
+          <th>Reason</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appt in upcoming %}
+          <tr>
+            <td>{{ appt.start_time.strftime("%Y-%m-%d %H:%M") }}</td>
+            <td>{{ appt.patient.user.full_name }}</td>
+            <td>Dr. {{ appt.doctor.user.full_name }}</td>
+            <td>{{ appt.reason }}</td>
+            <td>
+              <span class="badge bg-secondary text-capitalize">{{ appt.status.value }}</span>
+            </td>
+            <td>
+              {% if appt.status.value != "cancelled" and appt.status.value != "completed" %}
+                <form method="POST" action="{{ url_for('staff.update_status', appointment_id=appt.id) }}" class="d-inline">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <select name="status" class="form-select form-select-sm d-inline-block w-auto">
+                    <option value="pending" {% if appt.status.value == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="confirmed" {% if appt.status.value == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                    <option value="cancelled">Cancel</option>
+                    <option value="completed">Completed</option>
+                    <option value="rescheduled" {% if appt.status.value == 'rescheduled' %}selected{% endif %}>Rescheduled</option>
+                  </select>
+                  <button type="submit" class="btn btn-sm btn-outline-primary ms-1">Update</button>
+                </form>
+              {% else %}
+                <span class="text-muted small">—</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p class="text-muted">No upcoming appointments.</p>
+{% endif %}
+
+<section class="mt-5 pt-4 border-top">
+  <h4 class="mb-3">Health awareness &amp; hospital information</h4>
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h6 class="text-primary">Preventive care</h6>
+          <p class="small text-muted mb-0">Encourage patients to keep up with check-ups and screenings. Early detection saves lives.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h6 class="text-primary">Hospital protocols</h6>
+          <p class="small text-muted mb-0">Infection control, hand hygiene, and safety. Report concerns through proper channels.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h6 class="text-primary">Wellness &amp; resources</h6>
+          <p class="small text-muted mb-0">Seasonal health, vaccination schedules, and mental health support. Keep notice boards and patient info up to date.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

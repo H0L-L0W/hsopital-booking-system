@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}{{ config.name or "Hospital SaaS" }}{% endblock %}
+{% block content %}
+<div class="landing-page">
+  <section class="hero py-5 py-lg-6 mb-0" style="background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 50%, #99f6e4 100%); border-radius: 1rem;">
+    <div class="container py-4">
+      <div class="row align-items-center">
+        <div class="col-lg-7">
+          <h1 class="display-4 fw-bold mb-3" style="color: #0f766e;">{{ config.name or "Hospital SaaS" }}</h1>
+          <p class="lead text-dark mb-4" style="font-size: 1.2rem; color: #334155;">{{ config.description }}</p>
+          <p class="text-secondary mb-4">{{ config.homepage_content }}</p>
+          {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg me-2 px-4">Get Started</a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg px-4">Login</a>
+          {% else %}
+            <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary btn-lg px-4">Go to Dashboard</a>
+          {% endif %}
+        </div>
+        <div class="col-lg-5 d-none d-lg-block text-center">
+          <div class="hero-icon rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 200px; height: 200px; background: linear-gradient(135deg, #0d9488, #0f766e); color: #fff; font-size: 5rem;">🏥</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container py-5">
+    <section class="row mb-5">
+      <div class="col-lg-4 mb-4 mb-lg-0">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <h5 class="card-title text-primary mb-2">Leadership</h5>
+            <h6 class="text-dark">{{ config.ceo_name }}</h6>
+            <p class="card-text text-muted small mb-0">{{ config.ceo_bio }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <h3 class="h4 mb-3">Our Doctors</h3>
+        {% if doctors %}
+          <div class="row g-3">
+            {% for doctor in doctors %}
+              <div class="col-sm-6">
+                <div class="card border-0 shadow-sm h-100">
+                  <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                      <strong>{{ doctor.user.full_name }}</strong>
+                      {% if doctor.department %}
+                        <div class="text-muted small">{{ doctor.department.name }}</div>
+                      {% endif %}
+                    </div>
+                    {% if doctor.consultation_fee %}
+                      <span class="badge rounded-pill" style="background: var(--accent);">${{ doctor.consultation_fee }}</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-muted">No doctors have been added yet.</p>
+        {% endif %}
+
+        <h3 class="h4 mt-4 mb-3">Departments</h3>
+        {% if departments %}
+          <div class="d-flex flex-wrap gap-2">
+            {% for dept in departments %}
+              <span class="badge px-3 py-2" style="background: var(--bg-soft); color: var(--accent-dark); font-weight: 500;">{{ dept.name }}</span>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-muted">No departments have been configured yet.</p>
+        {% endif %}
+      </div>
+    </section>
+
+    {% if not current_user.is_authenticated %}
+    <section class="text-center py-4 rounded-3" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color: #fff;">
+      <p class="mb-2 fw-semibold">Ready to book your appointment?</p>
+      <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-sm">Create free account</a>
+    </section>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

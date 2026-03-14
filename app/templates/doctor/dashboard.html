@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Doctor Dashboard{% endblock %}
+{% block content %}
+{% set doctor = doctor if doctor is defined and doctor else current_user.doctor_profile %}
+{% set upcoming = upcoming if upcoming is defined else [] %}
+<h2 class="mb-4">Doctor Dashboard</h2>
+
+<div class="row mb-4">
+  <div class="col-lg-4 mb-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">Your Profile</h5>
+        <p class="mb-1"><strong>{{ doctor.user.full_name }}</strong></p>
+        {% if doctor.department %}
+          <p class="text-muted small mb-0">{{ doctor.department.name }}</p>
+        {% endif %}
+        {% if doctor.consultation_fee %}
+          <p class="mb-0 mt-2">Consultation fee: ${{ doctor.consultation_fee }}</p>
+        {% endif %}
+        <a href="{{ url_for('doctor.manage_availability') }}" class="btn btn-outline-primary btn-sm mt-3">Manage Availability</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <h4>Your Schedule</h4>
+    {% if upcoming %}
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th>Date &amp; Time</th>
+            <th>Patient</th>
+            <th>Reason</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for appt in upcoming %}
+            <tr>
+              <td>{{ appt.start_time.strftime("%Y-%m-%d %H:%M") }}</td>
+              <td>{{ appt.patient.user.full_name }}</td>
+              <td>{{ appt.reason }}</td>
+              <td>
+                <span class="badge bg-secondary text-capitalize">{{ appt.status.value }}</span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="text-muted">No upcoming appointments.</p>
+    {% endif %}
+  </div>
+</div>
+
+<section class="mt-5 pt-4 border-top">
+  <h4 class="mb-3">Health awareness &amp; hospital information</h4>
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h6 class="text-primary">Preventive care</h6>
+          <p class="small text-muted mb-0">Encourage patients to keep up with check-ups and screenings. Early detection saves lives.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h6 class="text-primary">Hospital protocols</h6>
+          <p class="small text-muted mb-0">Follow infection control and hand hygiene. Report any safety concerns to staff.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h6 class="text-primary">Wellness resources</h6>
+          <p class="small text-muted mb-0">Stay informed on seasonal health, vaccination schedules, and mental health support available at the facility.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

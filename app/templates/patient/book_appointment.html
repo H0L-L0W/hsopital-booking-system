@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Book Appointment{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <h2 class="mb-4">Book Appointment</h2>
+    <form method="POST">
+      {{ form.hidden_tag() }}
+
+      <div class="mb-3">
+        {{ form.doctor_id.label(class="form-label") }}
+        {{ form.doctor_id(class="form-select") }}
+        {% for error in form.doctor_id.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3">
+        {{ form.start_time.label(class="form-label") }}
+        {{ form.start_time(class="form-control") }}
+        <div class="form-text">Select your preferred date and time.</div>
+        {% for error in form.start_time.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3">
+        {{ form.reason.label(class="form-label") }}
+        {{ form.reason(class="form-control", rows=3) }}
+        {% for error in form.reason.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      {{ form.submit(class="btn btn-primary") }}
+      <a href="{{ url_for('patient.dashboard') }}" class="btn btn-link">Back to dashboard</a>
+    </form>
+  </div>
+</div>
+{% endblock %}
+

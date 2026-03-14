@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Manage Availability{% endblock %}
+{% block content %}
+<h2 class="mb-4">Manage Availability</h2>
+
+<div class="row">
+  <div class="col-md-5 mb-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">Add availability slot</h5>
+        <form method="POST">
+          {{ form.hidden_tag() }}
+          <div class="mb-3">
+            {{ form.weekday.label(class="form-label") }}
+            {{ form.weekday(class="form-select") }}
+            {% for error in form.weekday.errors %}
+              <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+          </div>
+          <div class="mb-3">
+            {{ form.start_time.label(class="form-label") }}
+            {{ form.start_time(class="form-control", placeholder="09:00") }}
+            {% for error in form.start_time.errors %}
+              <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+          </div>
+          <div class="mb-3">
+            {{ form.end_time.label(class="form-label") }}
+            {{ form.end_time(class="form-control", placeholder="17:00") }}
+            {% for error in form.end_time.errors %}
+              <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+          </div>
+          {{ form.submit(class="btn btn-primary") }}
+        </form>
+      </div>
+    </div>
+    <a href="{{ url_for('doctor.dashboard') }}" class="btn btn-link mt-2">Back to dashboard</a>
+  </div>
+
+  <div class="col-md-7">
+    <h5>Your availability</h5>
+    {% if availabilities %}
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>Start</th>
+            <th>End</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in availabilities %}
+            <tr>
+              <td>
+                {% set days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
+                {{ days[a.weekday] }}
+              </td>
+              <td>{{ a.start_time.strftime('%H:%M') }}</td>
+              <td>{{ a.end_time.strftime('%H:%M') }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="text-muted">No availability slots yet. Add one above.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
