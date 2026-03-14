@@ -37,6 +37,11 @@ def create_app():
     login_manager.login_view = "auth.login"
 
     from . import models  # noqa: F401
+
+    # Auto-create tables on first run so you don't need
+    # to run `flask db upgrade` manually on hosting
+    with app.app_context():
+        db.create_all()
     from .auth.routes import auth_bp
     from .main.routes import main_bp
     from .patient.routes import patient_bp
